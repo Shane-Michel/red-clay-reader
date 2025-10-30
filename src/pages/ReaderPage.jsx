@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { NavigationContext } from '../navigation'
 import { getEdition } from '../services/openLibrary'
 import { getProgressForEdition, saveProgress } from '../utils/storage'
+import { applySeoMetadata, buildCanonicalUrl } from '../utils/seo'
 import useArchiveEmbedErrorSuppression from '../utils/useArchiveEmbedErrorSuppression'
 
 function parsePageFromHash(hash) {
@@ -118,6 +119,26 @@ export default function ReaderPage({ editionId }) {
     }
     return `https://archive.org/embed/${iaId}?ui=full&show=bookReader#page/n${clampPage(page)}`
   }, [iaId, page])
+
+  useEffect(() => {
+    const editionTitle = edition?.title || location.state?.title
+    if (!editionTitle) {
+      return
+    }
+    const authorLine = edition?.by_statement || edition?.author_display || location.state?.author
+    const composedTitle = authorLine ? `${editionTitle} by ${authorLine}` : editionTitle
+    const metaTitle = `${composedTitle} · Reader · Red Clay Reader`
+    const metaDescription = `Read ${editionTitle}${
+      authorLine ? ` by ${authorLine}` : ''
+    } online with Red Clay Reader's embedded Internet Archive BookReader and resume your progress anytime.`
+
+    applySeoMetadata({
+      title: metaTitle,
+      description: metaDescription,
+      ogType: 'book',
+      url: buildCanonicalUrl(location.path, location.search),
+    })
+  }, [edition?.author_display, edition?.by_statement, edition?.title, location.path, location.search, location.state?.author, location.state?.title])
 
   const handlePageChange = (nextPage) => {
     const safePage = clampPage(nextPage)
