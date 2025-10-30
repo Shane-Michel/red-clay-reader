@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { NavigationContext } from './navigation'
+import { applySeoMetadata, buildCanonicalUrl, getDefaultDescription } from './utils/seo'
 import HomePage from './pages/HomePage'
 import BookDetailPage from './pages/BookDetailPage'
 import ReaderPage from './pages/ReaderPage'
@@ -41,14 +42,29 @@ function App() {
 
   useEffect(() => {
     const titleBase = 'Red Clay Reader'
+    let pageTitle = titleBase
+    let description = getDefaultDescription()
+    let ogType = 'website'
+
     if (location.path.startsWith('/books/')) {
-      document.title = `${titleBase} · Book Detail`
+      pageTitle = `${titleBase} · Book Detail`
+      description =
+        'Browse detailed publication history, authors, and embeddable public-domain editions from Open Library on Red Clay Reader.'
+      ogType = 'book'
     } else if (location.path.startsWith('/read/')) {
-      document.title = `${titleBase} · Reader`
-    } else {
-      document.title = `${titleBase}`
+      pageTitle = `${titleBase} · Reader`
+      description =
+        "Read digitized public-domain books directly in your browser with Red Clay Reader's Internet Archive BookReader integration."
+      ogType = 'book'
     }
-  }, [location.path])
+
+    applySeoMetadata({
+      title: pageTitle,
+      description,
+      ogType,
+      url: buildCanonicalUrl(location.path, location.search),
+    })
+  }, [location.path, location.search])
 
   const providerValue = useMemo(
     () => ({ location, navigate }),

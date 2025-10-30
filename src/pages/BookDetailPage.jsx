@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import Link from '../components/Link'
 import { NavigationContext } from '../navigation'
 import { buildCoverUrl, buildEditionUrl, buildWorkUrl, getWork, getWorkEditions } from '../services/openLibrary'
+import { applySeoMetadata, buildCanonicalUrl } from '../utils/seo'
 
 function normaliseDescription(description) {
   if (!description) {
@@ -121,6 +122,27 @@ export default function BookDetailPage({ workId }) {
     }
     return null
   }, [bestEdition?.coverId, work?.covers])
+
+  useEffect(() => {
+    if (!work) {
+      return
+    }
+
+    const metaTitle = authorNames ? `${work.title} by ${authorNames} · Red Clay Reader` : `${work.title} · Red Clay Reader`
+    const summarySource = description
+      ? description.replace(/\s+/g, ' ').trim()
+      : `Explore publication history and public-domain editions of ${work.title}${
+          authorNames ? ` by ${authorNames}` : ''
+        } on Red Clay Reader.`
+    const metaDescription = summarySource.length > 300 ? `${summarySource.slice(0, 297)}…` : summarySource
+
+    applySeoMetadata({
+      title: metaTitle,
+      description: metaDescription,
+      ogType: 'book',
+      url: buildCanonicalUrl(location.path, location.search),
+    })
+  }, [authorNames, description, location.path, location.search, work?.title])
 
   if (status === 'loading') {
     return (
