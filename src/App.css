@@ -477,6 +477,43 @@
   gap: 0.5rem;
 }
 
+.shelf-status {
+  margin-top: 1rem;
+}
+
+.shelf-item--loading {
+  opacity: 0.65;
+}
+
+.shelf-placeholder-line {
+  height: 0.85rem;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  margin-bottom: 0.35rem;
+}
+
+.shelf-placeholder-line:last-child {
+  width: 80%;
+  margin-bottom: 0;
+}
+
+.shelf-placeholder-button {
+  height: 2.25rem;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+}
+
+.shelf-item--message {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+}
+
+.shelf-item--message p {
+  margin: 0;
+}
+
 .cta {
   display: flex;
   justify-content: center;
