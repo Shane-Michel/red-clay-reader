@@ -4,8 +4,8 @@ const curatedShelves = [
     title: 'Peachtree Classics',
     description: 'Signature Georgia voices and Southern scenes that shaped the canon.',
     search: {
-      query: 'Georgia literature',
-      subject: 'georgia -- fiction',
+      query: 'uncle remus',
+      subject: 'uncle remus',
       language: 'eng',
     },
     maxItems: 6,
@@ -16,7 +16,7 @@ const curatedShelves = [
     description: 'Public-domain cookbooks and kitchen wisdom from across the South.',
     search: {
       query: 'southern cooking',
-      subject: 'cooking, american -- southern style',
+      subject: 'cooking, american, southern',
       language: 'eng',
     },
     maxItems: 6,
@@ -26,8 +26,8 @@ const curatedShelves = [
     title: 'Small Business Staples',
     description: 'Entrepreneurial wisdom, bookkeeping, and marketing guides from the public domain.',
     search: {
-      query: 'business training',
-      subject: 'business education',
+      query: 'business',
+      subject: 'business',
       language: 'eng',
     },
     maxItems: 6,
