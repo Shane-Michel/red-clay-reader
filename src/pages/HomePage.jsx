@@ -275,20 +275,6 @@ export default function HomePage() {
         <ShelfSection key={shelf.slug} shelf={shelf} />
       ))}
 
-      <section className="cta" aria-labelledby="cta-heading">
-        <div className="cta-card">
-          <h2 id="cta-heading">Ready to launch Red Clay Reader?</h2>
-          <p>Swap in your branding, tune the shelves, and deploy the PHP proxy to keep the reading experience blazing fast.</p>
-          <div className="cta-actions">
-            <Link to="/books/OL262793W" className="ghost-button">
-              View sample detail
-            </Link>
-            <a className="primary-button" href="https://internetarchive.github.io/bookreader/" target="_blank" rel="noreferrer">
-              BookReader docs ↗
-            </a>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
