@@ -1,34 +1,83 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useMemo, useState } from 'react'
+import { NavigationContext } from './navigation'
+import HomePage from './pages/HomePage'
+import BookDetailPage from './pages/BookDetailPage'
+import ReaderPage from './pages/ReaderPage'
+import Header from './components/Header'
+import Footer from './components/Footer'
+import NotFoundPage from './pages/NotFoundPage'
 import './App.css'
 
+function getLocationSnapshot() {
+  return {
+    path: window.location.pathname || '/',
+    search: window.location.search || '',
+    hash: window.location.hash || '',
+    state: window.history.state || null,
+  }
+}
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [location, setLocation] = useState(() => getLocationSnapshot())
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setLocation(getLocationSnapshot())
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [])
+
+  const navigate = (to, { state = null, replace = false } = {}) => {
+    if (replace) {
+      window.history.replaceState(state, '', to)
+    } else {
+      window.history.pushState(state, '', to)
+    }
+    setLocation(getLocationSnapshot())
+  }
+
+  useEffect(() => {
+    const titleBase = 'Red Clay Reader'
+    if (location.path.startsWith('/books/')) {
+      document.title = `${titleBase} · Book Detail`
+    } else if (location.path.startsWith('/read/')) {
+      document.title = `${titleBase} · Reader`
+    } else {
+      document.title = `${titleBase}`
+    }
+  }, [location.path])
+
+  const providerValue = useMemo(
+    () => ({ location, navigate }),
+    [location],
+  )
+
+  let content
+  if (location.path === '/' || location.path === '') {
+    content = <HomePage />
+  } else if (location.path.startsWith('/books/')) {
+    const workId = location.path.replace('/books/', '')
+    content = <BookDetailPage workId={workId} />
+  } else if (location.path.startsWith('/read/')) {
+    const editionId = location.path.replace('/read/', '')
+    content = <ReaderPage editionId={editionId} />
+  } else {
+    content = <NotFoundPage />
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <NavigationContext.Provider value={providerValue}>
+      <div className="app-shell">
+        <Header />
+        <main className="app-main" role="main">
+          {content}
+        </main>
+        <Footer />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </NavigationContext.Provider>
   )
 }
 
