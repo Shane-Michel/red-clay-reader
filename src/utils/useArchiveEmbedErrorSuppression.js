@@ -30,6 +30,26 @@ function isArchiveCustomElementError(event) {
 
 export default function useArchiveEmbedErrorSuppression() {
   useEffect(() => {
+    const registry = window.customElements
+    const originalDefine = typeof registry?.define === 'function' ? registry.define : null
+
+    let patchedDefine = null
+
+    if (registry && originalDefine) {
+      patchedDefine = function defineWithDuplicateGuard(name, constructor, options) {
+        if (registry.get(name)) {
+          return
+        }
+        return originalDefine.call(this, name, constructor, options)
+      }
+
+      try {
+        registry.define = patchedDefine
+      } catch {
+        patchedDefine = null
+      }
+    }
+
     const handleWindowError = (event) => {
       if (isArchiveCustomElementError(event)) {
         event.preventDefault()
@@ -42,6 +62,13 @@ export default function useArchiveEmbedErrorSuppression() {
 
     return () => {
       window.removeEventListener('error', handleWindowError)
+      if (registry && patchedDefine && registry.define === patchedDefine && originalDefine) {
+        try {
+          registry.define = originalDefine
+        } catch {
+          // Ignore cleanup failures.
+        }
+      }
     }
   }, [])
 }
