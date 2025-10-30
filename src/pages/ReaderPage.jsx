@@ -2,6 +2,7 @@ import { useContext, useEffect, useMemo, useState } from 'react'
 import { NavigationContext } from '../navigation'
 import { getEdition } from '../services/openLibrary'
 import { getProgressForEdition, saveProgress } from '../utils/storage'
+import useArchiveEmbedErrorSuppression from '../utils/useArchiveEmbedErrorSuppression'
 
 function parsePageFromHash(hash) {
   const match = /page\/n(\d+)/i.exec(hash || '')
@@ -22,6 +23,7 @@ function clampPage(page) {
 }
 
 export default function ReaderPage({ editionId }) {
+  useArchiveEmbedErrorSuppression()
   const { location } = useContext(NavigationContext)
   const [iaId, setIaId] = useState(location.state?.iaId || null)
   const [edition, setEdition] = useState(null)
